@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "debug": "node --debug-brk ./bin/www"
+    "debug": "node --debug-brk ./bin/www",
+    "shell": "node index.js",
+    "dbgshell": "node --debug-brk index.js"
   },
   "dependencies": {
+    "bluebird": "^3.4.5",
     "body-parser": "~1.15.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
