@@ -16,6 +16,6 @@ var save = function(key, text){
   }).catch(function (err) {
     console.log(err);
   });
-}
+};
 
 save("t14", json);

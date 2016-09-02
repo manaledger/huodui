@@ -14,12 +14,12 @@ router.get('/get', function(req, res, next) {
       return don.getJson(key);
     }).then(function (value) {
       var o = JSON.parse(value);
-      res.json({code:0, data:o})
+      res.json({code:0, data:o});
     }).catch(function (err) {
       res.json({code:-1, error:err.message});
     });
   }else{
-    res.json({code:-1, error:"invalid parameter"})
+    res.json({code:-1, error:"invalid parameter"});
   }
 });
 
@@ -32,7 +32,7 @@ router.post('/save', function(req, res, next) {
   var json = req.body.json;
   try {
     if (json && typeof json === 'object') {
-      var str = JSON.stringify(json)
+      var str = JSON.stringify(json);
       don.setup(true).then( function () {
         return don.saveJson(key, str);
       }).then(function (value) {
@@ -44,7 +44,7 @@ router.post('/save', function(req, res, next) {
   } catch (e) {
       res.json({code:-1, error:e.message});
   }
-})
+});
 
 
 module.exports = router;
