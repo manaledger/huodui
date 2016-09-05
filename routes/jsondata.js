@@ -1,5 +1,5 @@
 var express = require('express');
-var WebJsondata  = require('../jsondata');
+var WebJsondata  = require('../script/jsondata');
 var router = express.Router();
 
 var don = new WebJsondata();

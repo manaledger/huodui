@@ -36,5 +36,5 @@ npm start
 5. 访问[http://localhost:3000](http://localhost:3000)
 
 6. RestAPI (http须设置请求头Content-type为application/json)
-* [donate](donateApi.md)  捐赠接口
-* [jsondata](jsondataApi.md) 通用Json接口
+* [donate](doc/donateApi.md)  捐赠接口
+* [jsondata](doc/jsondataApi.md) 通用Json接口

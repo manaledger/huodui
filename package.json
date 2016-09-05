@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "debug": "node --debug-brk ./bin/www",
-    "shell": "node index.js",
-    "dbgshell": "node --debug-brk index.js"
+    "shell": "node script/index.js",
+    "dbgshell": "node --debug-brk script/index.js"
   },
   "dependencies": {
     "bluebird": "^3.4.5",

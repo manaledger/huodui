@@ -1,4 +1,4 @@
-const JsondataSol = require('./build/contracts/Jsondata.sol');
+const JsondataSol = require('../build/contracts/Jsondata.sol');
 const Web3 = require('web3');
 const Promise = require('bluebird');
 

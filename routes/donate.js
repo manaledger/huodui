@@ -1,5 +1,5 @@
 var express = require('express');
-var Donate  = require('../donate');
+var Donate  = require('../script/donate');
 var router = express.Router();
 
 var don = new Donate();

@@ -1,4 +1,4 @@
-const DonateSol = require('./build/contracts/Donate.sol');
+const DonateSol = require('../build/contracts/Donate.sol');
 const Web3 = require('web3');
 const Promise = require('promise');
 
