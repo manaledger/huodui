@@ -1,21 +1,19 @@
 var jsondata = require('./jsondata');
 var Promise = require('bluebird');
 
-var jd = new jsondata();
+var jd = new jsondata(false);
 
 var obj = {
-  hello:"hello",
-  world:"world"
+    hello: "hello",
+    world: "world"
 };
 
 var json = JSON.stringify(obj);
 
-var save = function(key, text){
-  jd.setup(false).then(function () {
-    return jd.saveJson(key, text);
-  }).catch(function (err) {
-    console.log(err);
-  });
+var save = function(key, text) {
+    jd.saveJson(key, text).catch(function(e) {
+        console.log(e);
+    });
 };
 
-save("t14", json);
+save("t19", json);
