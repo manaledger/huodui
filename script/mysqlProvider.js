@@ -1,33 +1,42 @@
-const mongoose = require('mongoose');
+const mysql = require('mysql');
 const Promise = require('bluebird');
 const jsonProvider = require('./jsondata');
 const fs = require('fs');
 
-module.exports = MongdoData;
+module.exports = MysqlProvider;
 
-function MongdoData(config) {
-    mongoose.Promise = Promise;
-    this.db = mongoose.connect(config.url);
+function MysqlProvider(config) {
+    this.connection = mysql.createConnection(config.connection);
+    this.connection.connect();
     this.config = config;
     this.jsonPriver = new jsonProvider(false);
 }
 
-MongdoData.prototype.dataFromMongo = function() {
+MysqlProvider.prototype.dataFromMysql = function() {
     var config = this.config;
-    this.schema = new mongoose.Schema(config.schema, config.schemaOpt);
-    var collection = this.db.model('xxx', this.schema);
-    var sortOpt = {};
-    sortOpt[config.sortKey] = config.sortOrder;
+    var connection = this.connection;
     var contents;
     try{
       contents = JSON.parse(fs.readFileSync(config.recordFile, 'utf8'));
     }catch(e){}
     var lastNo = contents && parseInt(contents['lastNo']) || 0;
-    return collection.find().sort(sortOpt).skip(lastNo).limit(config.limit).exec();
+    var order  = config.sortOrder === 1? " ASC " : " DESC ";
+    var sql = "select * from "+ config.table +" order by "+ config.sortKey + order + " limit " + config.limit + " offset " + lastNo;
+
+    return new Promise(function (resolve, reject) {
+      connection.query(sql, function (err, rows, fields) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+    });
 
 };
 
-MongdoData.prototype.transformToJsons = function(array) {
+
+MysqlProvider.prototype.transformToJsons = function(array) {
     var i,j,temp;
     var arr = [];
     for (i = 0, j = array.length; i < j; i += this.config.splitCnt){
@@ -39,7 +48,8 @@ MongdoData.prototype.transformToJsons = function(array) {
     return arr;
 };
 
-MongdoData.prototype.saveToBlockChain = function (array) {
+
+MysqlProvider.prototype.saveToBlockChain = function (array) {
     var promiseArray = [];
     var that = this;
     for (obj of array) {
@@ -47,19 +57,20 @@ MongdoData.prototype.saveToBlockChain = function (array) {
     }
     return new Promise(function (resolve, reject) {
       Promise.all(promiseArray).then(function (data) {
-        mongoose.disconnect();
+        that.connection.end();
         fs.writeFileSync(that.config.recordFile,JSON.stringify({'lastNo': that.lastNO}), 'utf8');
         resolve(data);
       }).catch(function (err) {
-        mongoose.disconnect();
+        that.connection.disconnect();
         reject(err);
       });
     })
 };
 
-MongdoData.prototype.queryAndSave = function () {
+
+MysqlProvider.prototype.queryAndSave = function () {
   var that = this;
-  return that.dataFromMongo().then(function (array) {
+  return that.dataFromMysql().then(function (array) {
     return that.transformToJsons(array);
   }).then(function (array) {
     return that.saveToBlockChain(array);

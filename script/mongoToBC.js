@@ -1,7 +1,7 @@
-const mongodata = require('./mongo-multi');
-const dbconfig = require('./db-config');
+const MongoProvider = require('./mongoProvider');
+const dbconfig = require('./mongodb-config');
 
-var dm = new mongodata(dbconfig);
+var dm = new MongoProvider(dbconfig);
 dm.queryAndSave().then(function (array) {
   console.log("finished...");
 }).catch(function (err) {
