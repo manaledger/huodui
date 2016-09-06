@@ -7,6 +7,10 @@ const DBProvider = require('./DBProvider');
 module.exports = MysqlProvider;
 util.inherits(MysqlProvider, DBProvider);
 
+/**
+ * Mysql数据导出支持类
+ * @param {[type]} config [description]
+ */
 function MysqlProvider(config) {
     if(!(this instanceof MysqlProvider))
       return new MysqlProvider();
@@ -15,6 +19,10 @@ function MysqlProvider(config) {
     DBProvider.call(this, config);
 }
 
+/**
+ * 实现父类的获取数据方法
+ * @return {[type]} [description]
+ */
 MysqlProvider.prototype.getData = function() {
     var config = this.config;
     var connection = this.connection;
@@ -34,6 +42,10 @@ MysqlProvider.prototype.getData = function() {
 
 };
 
+/**
+ * 实现父类的清理方法
+ * @return {[type]} [description]
+ */
 MysqlProvider.prototype.clean = function () {
   this.connection.end();
 };

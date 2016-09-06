@@ -4,6 +4,10 @@ const fs = require('fs');
 
 module.exports = DBProvider;
 
+/**
+ * 数据库访问抽象类，传入配置项初始化
+ * @param {object} config 配置选项列表
+ */
 function DBProvider(config) {
     this.config = config;
     this.jsonPriver = new jsonProvider(false);
@@ -15,14 +19,27 @@ function DBProvider(config) {
     this.lastNoChange = false;
 }
 
+/**
+ * 获取数据，必须由子类实现
+ * @return {[type]} [description]
+ */
 DBProvider.prototype.getData = function() {
     throw new Error('not implementing getData ...');
 };
 
+/**
+ * 清理函数，必须由子类实现
+ * @return {[type]} [description]
+ */
 DBProvider.prototype.clean = function() {
     throw new Error('not implementing clean  ...');
 };
 
+/**
+ * 将数据库查询出来的数据转换成JSON列表形式
+ * @param  {array} array 数据库查询结果
+ * @return {araay}       转换后的数组，每个元素是一个对象，由key和json项组成
+ */
 DBProvider.prototype.transformToJsons = function(array) {
     var i, j, temp;
     var arr = [];
@@ -41,6 +58,11 @@ DBProvider.prototype.transformToJsons = function(array) {
     return arr;
 };
 
+/**
+ * 将JSON数组写入到区块链中
+ * @param  {array}  array 数组，每个元素是一个对象，由key和json项组成
+ * @return {promise}
+ */
 DBProvider.prototype.saveToBlockChain = function(array) {
     var promiseArray = [];
     var that = this;
@@ -48,6 +70,7 @@ DBProvider.prototype.saveToBlockChain = function(array) {
         promiseArray.push(this.jsonPriver.saveJson(obj.key, obj.json));
     }
     return new Promise(function(resolve, reject) {
+        // 成功，做清理工作，记录最后ID
         Promise.all(promiseArray).then(function(data) {
             that.clean();
             if (that.lastNoChange) {
@@ -66,6 +89,10 @@ DBProvider.prototype.saveToBlockChain = function(array) {
     })
 };
 
+/**
+ * 从数据库查询数据，并将结果写入区块链中
+ * @return {promise}
+ */
 DBProvider.prototype.queryAndSave = function() {
     var that = this;
     return that.getData().then(function(array) {
