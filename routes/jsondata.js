@@ -1,8 +1,18 @@
 var express = require('express');
+const mqconfig = require('../script/mqconfig');
+const open = require('amqplib').connect(mqconfig.url);
 var WebJsondata  = require('../script/jsondata');
 var router = express.Router();
 
 var don = new WebJsondata();
+var channel;
+
+open.then(function (conn) {
+  return conn.createChannel();
+}).then(function (ch) {
+  channel = ch;
+  return ch.assertExchange(mqconfig.exchange, 'topic', {durable:true});
+}).catch(console.warn);
 
 /**
  * 获取key对应的JSON数据
@@ -43,6 +53,15 @@ router.post('/save', function(req, res, next) {
     }
   } catch (e) {
       res.json({code:-1, error:e.message});
+  }
+});
+
+router.post('/enqueue', function (req, res, next) {
+  if (channel){
+    channel.publish(mqconfig.exchange, mqconfig.defaultKey, new Buffer(JSON.stringify(req.body)), {persistent:true});
+    res.json({code:0});
+  }else{
+    res.json({code:-1, error:'system not reday!'});
   }
 });
 

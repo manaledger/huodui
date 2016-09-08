@@ -25,7 +25,32 @@ json: json对象
 }    
 ```
 
-2. 查询JSON记录
+2. 新增JSON记录(队列方式)
+
+```
+路径：/json/enqueue
+请求方式: POST
+参数列表：{
+  "key": "hello",
+  "json": {
+    "key": "hello",
+    "json": "world"
+  }
+}
+key: 键值，不超过32个字符
+json: json对象
+
+返回成功: {
+  "code": 0
+}
+
+返回失败: {
+  "code": -1,
+  "error": "xxx"
+}    
+```
+
+3. 查询JSON记录
 
 ```
 路径: /json/get
