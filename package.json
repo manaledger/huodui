@@ -20,7 +20,8 @@
     "morgan": "~1.7.0",
     "mysql": "^2.11.1",
     "serve-favicon": "^2.3.0",
-    "web3": "^0.17.0-alpha"
+    "web3": "^0.17.0-alpha",
+    "yargs": "^5.0.0"
   },
   "description": "##### 项目描述 将数据存储在以太坊上并提供RestAPI访问接口",
   "main": "index.js",
