@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>我的捐款</title>
+    <link rel="stylesheet" href="/stylesheets/mydonation.css" media="screen" title="no title">
+    <script type="text/javascript" src="/jsSheets/jQuery.min.js"></script>
+    <script type="text/javascript" src="/jsSheets/dodnationRequest.js"></script>
+    <script type="text/javascript" src="/jsSheets/bower_components/moment/moment.js"></script>
+  </head>
+  <body id="bodyBg">
+      <div id="middleContentStyle">
+      	<!--个人捐款-->
+      		<span id="Textstatus">审核中</span>
+      		<div style="margin:auto;width: 78px;position: relative;">
+      			<span id="myskyblue-Bg">0</span>
+      			<div id="mytimeid" class="lightblue-Bg right-time"></div>
+      			<img src="/Imges/rhombus.png"/ class="right-rhombus">
+      			<img src="/Imges/downArrow.png"/ style="margin: auto;width: 22px;display: block;">
+      		</div>
+      		<!--数据列表-->
+        <ul>
+        		<!--<li>
+        		<span class="skyblue-Bg">555555</span>
+        		<a href="" class="a-NoneStyle deepblue-Bg right-branchPosition-deepblue-Bg">100</a>
+        		<div class="lightblue-Bg left-time">2016-09-05 19:35</div>
+        		<img src="/Imges/rightBentArrow.png"/ class="righttArrowImg">
+        		<img src="/Imges/rhombus.png"/ class="left-rhombus">
+        		<img src="/Imges/middleChain.png"/ class="chainImg">
+	        	</li>
+	        	<li>
+	        		<span class="skyblue-Bg">555555</span>
+	        		<a href="" class="a-NoneStyle deepblue-Bg left-branchPosition-deepblue-Bg">100</a>
+	        		<div class="lightblue-Bg right-time">2016-09-05 19:35</div>
+	        		<img src="/Imges/leftBentArrow.png"/ class="leftArrowImg">
+	        		<img src="/Imges/rhombus.png"/ class="right-rhombus">
+	        		<img src="/Imges/middleChain.png"/ class="chainImg">
+	        	</li>	-->
+        </ul>
+      </div>
+  </body>
+  <script type="text/javascript">
+  		$(function(){
+  			donationBranch();
+  		})
+  </script>
+</html>
