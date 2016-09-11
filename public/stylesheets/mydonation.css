@@ -88,3 +88,43 @@ li{list-style: none;}
 .right-time{position: absolute;right: -95px;top: 15px;}
 
 .a-NoneStyle{text-decoration: none;}
+
+
+.wrapper 
+{
+	position: absolute;
+	z-index: 1;
+	top: 60px;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	overflow: hidden;
+	background-color: rgba(255,255,255,0),;
+	}    
+		
+.scroller 
+{
+	position: relative;
+	z-index: 1;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	width: 100%;
+	-webkit-transform: translateZ(0);
+	-moz-transform: translateZ(0);
+	-ms-transform: translateZ(0);
+	-o-transform: translateZ(0);
+	transform: translateZ(0);
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-ms-text-size-adjust: none;
+	-o-text-size-adjust: none;
+	text-size-adjust: none;
+	min-height:100%;
+	background-color: #fff;
+	border:1px solid white;
+	background-color: rgba(255,255,255,0);
+}   		

@@ -178,9 +178,24 @@ function hasBeenDoingFunction(projectdata,paymentdata){
 
 
 //参与的历史记录
-function donationHistory(){
+function donationHistory(pageDonateId,lasttime,fromtimeval,totimeval,callback){
 	var request = GetRequest();
+	var donateId=pageDonateId;
+	var lasttimeStr = lasttime;
+	request['_id']=donateId;
+	request['lasttime']=lasttime;
+	request['frometime']=fromtimeval;
+	request['totime']=totimeval;
 	$.post('/myDonation/mydonation_history',request,function(data,status){
+		var dataArr = data.data;
+		if(donateId==0){
+			$('#middleContentStyle ul').html('');
+		}
+		if(dataArr.length>0){
+			donateId=dataArr[dataArr.length-1]._id;
+			lasttimeStr=moment(dataArr[dataArr.length-1].date).format("YYYY-MM-DD");
+		}
+		callback(donateId,lasttimeStr);
 		if (status != 'success'){
 			alert('数据请求失败');
 			return;
@@ -189,10 +204,42 @@ function donationHistory(){
 			alert(data.message);
 			return;
 		}
-		
-		alert(JSON.stringify(data));
-		
-		
-		
+		datahistoryReload(dataArr);
 	});
+}
+
+function datahistoryReload(data){
+	for (var i = 0; i < data.length; i++) {
+		
+		var liObj = document.createElement('li');
+		var spanObj = document.createElement('span');
+		var divObj = document.createElement('div');
+		var rhombusObj = document.createElement('img');
+		var chainObj = document.createElement('img');
+		$('#middleContentStyle ul').append(liObj);
+		liObj.appendChild(spanObj);
+		liObj.appendChild(divObj);
+		liObj.appendChild(rhombusObj);
+		liObj.appendChild(chainObj);
+		
+		$(chainObj).addClass('chainImg');
+		$(spanObj).addClass('skyblue-Bg');
+		
+		$(chainObj).attr('src','/Imges/middleChain.png');
+		if(i%2==0){
+			$(divObj).addClass('lightblue-Bg left-time');
+			$(rhombusObj).addClass('left-rhombus').attr('src','/Imges/rhombus.png');
+		}else{
+			$(divObj).addClass('lightblue-Bg right-time');
+			$(rhombusObj).addClass('right-rhombus').attr('src','/Imges/rhombus.png');
+		}
+		
+		var donate_fee = data[i].donate_fee;
+		var dateStr = moment(data[i].date).format('YYYY-MM-DD HH:MM');
+		var name = data[i].project.name;
+		
+		$(spanObj).html(donate_fee);
+		$(divObj).html(name+'<br/>'+dateStr);
+		
+	}
 }

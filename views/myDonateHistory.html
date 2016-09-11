@@ -8,17 +8,197 @@
 	    <script type="text/javascript" src="/jsSheets/jQuery.min.js"></script>
 	    <script type="text/javascript" src="/jsSheets/dodnationRequest.js"></script>
 	    <script type="text/javascript" src="/jsSheets/bower_components/moment/moment.js"></script>
+	    <script type="text/javascript" src="/jsSheets/iscroll-probe-edited.js"></script>
+	    	<style type="text/css">    
+		body {overflow: hidden;margin: 0;padding: 0;}    
+		</style>
 	</head>
 	<body id="bodyBg">
-      <div id="middleContentStyle">
-        <ul>
-        		
-        </ul>
-      </div>
-  </body>
-  <script type="text/javascript">
-  	$(function(){
-  		donationHistory();
-  	});
-  </script>
+		<div style="width: 100%;text-align: center;">
+			<input type="date" name="fromtime" id="fromtime" value="" style="border: 1px solid grey;"/>
+			<label>至</label>
+			<input type="date" name="totime" id="totime" value="" style="border: 1px solid grey;"/>
+		</div>
+		<div style="height: 20px;width: 100%;text-align: center;line-height: 20px;">
+				我的捐款记录			
+		</div>
+		<div class="wrapper">  
+			<div class="scroller">        
+				<div id="downTag" style="height: 40px;width:100%;background-color: white;position: absolute;z-index: -1;top: -40px;text-align: center; line-height: 40px;color: #999999;font-size: 10px;">下拉</div>        
+				<div id="middleContentStyle">
+					<ul>
+	       			</ul>
+				</div>
+				<div id="upTag" style="height: 40px;width:100%;background-color: white;position: absolute;z-index: -1;bottom: -40px;text-align: center; line-height: 40px;color: #999999;font-size: 10px;">上拉</div>    
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript"> 
+	var myScroll;
+	var pageDonateId=0;
+	var fromtimeval='1900-1-1';
+	var totimeval= moment().add(1,'day').format('YYYY-MM-DD');
+	var lasttime=totimeval;
+	$(function(){   
+			var option = {       
+			pull_up : true, //是否显示上拉       
+			pull_down : true,//是否显示下拉        
+			is_loading : false,//是否正在加载 即上拉后正在加载       
+			is_refresh : false,//是否正在下拉刷新        
+			pull_distance : 50,//拉动距离 即达到出发加载或刷新的临界值        
+			pull_element_height : 50,//上拉 下拉显示标签的高度  也是iscroll回弹后定位的高度 
+			pull_up_element:document.querySelector('#upTag'),//上拉标签  
+			pull_down_element:document.querySelector('#downTag')//下拉标签    
+			};    
+			//上拉下拉几个临界点的显示效果    
+			var loading_style = {
+				// 变化的文字或者效果
+				refresh_before : function(){            
+					//没有刷新没有加载情况下 才变化           
+					if(!option.is_loading && !option.is_refresh)
+					option.pull_down_element.innerText = '下拉刷新';        
+				},
+				refresh_able : function(){            
+						//没有刷新没有加载情况下 才变化            
+						if(!option.is_loading && !option.is_refresh)
+						option.pull_down_element.innerText = '松手开始刷新';        
+				},       
+				refresh_start : function(){            
+					document.getElementById('downTag').innerText = '正在刷新...';
+						//正在刷新的时候隐藏上拉加载   
+						if(option.pull_up)
+						option.pull_up_element.style.display = 'none';       
+				},        
+				refresh_end : function(){            
+					document.getElementById('downTag').innerText = '刷新完成';            
+					//刷新完成 显示上拉加载
+						
+						if(option.pull_up)
+						option.pull_up_element.style.display = '';        
+				},       
+				load_before : function(){           
+					//没有刷新没有加载情况下 才变化            
+					if(!option.is_loading && !option.is_refresh)
+					option.pull_up_element.innerText = '上拉加载更多';       
+				},        
+				load_able : function(){            
+					//没有刷新没有加载情况下 才变化           
+					if(!option.is_loading && !option.is_refresh)
+					option.pull_up_element.innerText = '松手开始加载';        
+				},        
+				load_start : function(){            
+					document.getElementById('upTag').innerText = '正在加载...';            
+					//正在加载的时候 隐藏下拉刷新 
+					if(option.pull_down)
+					option.pull_down_element.style.display = 'none';        
+				},        
+				load_end : function(){            
+					option.pull_up_element.innerText = '加载完成';            
+					//加载完成了 显示下拉刷新      
+					if(option.pull_down)option.pull_down_element.style.display = '';        
+				}   
+			};    
+			//根据设置 隐藏上拉下拉标签    
+			if(!option.pull_up)option.pull_up_element.style.display = 'none';    
+			if(!option.pull_down)option.pull_down_element.style.display = 'none';    
+			//实例化iscroll   
+			myScroll = new IScroll('.wrapper', {probeType:2});    
+			//滑动事件处理    
+			myScroll.on('scroll',function(){        
+				//计算拉动的距离 处理为正数是下拉 负数是上拉        
+				var absY = this.maxScrollY-this.y;       
+				this.moved_distance = this.y>0?this.y:(absY>0?-absY:0);       
+				//回弹距离0 默认是到初始位置        
+				this.minScrollY = 0;        
+				switch (true){            //大于0 为下拉刷新 :0 - 刷新的临界值           
+					case this.moved_distance>0&&this.moved_distance<option.pull_distance:
+					loading_style.refresh_before();                
+					break;
+					//大于0 为下拉刷新 :刷新的临界值以上 出发刷新           
+					case this.moved_distance>option.pull_distance:
+					loading_style.refresh_able();                
+					//启用下拉刷新 并且不是上拉加载正在加载的情况下才控制回弹高度 
+					if(option.pull_down && !option.is_loading) 
+					this.minScrollY=option.pull_element_height;               
+					break;
+					//小于0 上拉加载: 0 - 负数 的刷新临界值           
+					case this.moved_distance<0&&this.moved_distance>-option.pull_distance:
+					loading_style.load_before();                
+					break;            
+					//小于0 上拉加载: 负数 的刷新临界值以下 触发加载            case :
+					
+					case this.moved_distance<-option.pull_distance: 
+					loading_style.load_able();
+					//启用的上拉加载 并且不是正在刷新 才控制回弹高度                
+					if(option.pull_up && !option.is_refresh)
+					this.minScrollY=option.pull_element_height;                
+					break;        
+				}    
+			});
+
+			
+			//滑动结束的处理    		
+			myScroll.on('scrollEnd',function(e){
+						//没有正则刷新且没有正在加载 才触发 刷新和加载的处理        
+						if( !option.is_loading && !option.is_refresh){           
+							//判断临界值           
+							if(this.moved_distance > option.pull_distance)
+							{                
+								loading_style.refresh_start();
+								option.is_refresh = true; 
+								pageDonateId=0;
+								lasttime=totimeval;
+								donationHistory(pageDonateId,lasttime,fromtimeval,totimeval,function(donateId,lasttimeStr){
+									pageDonateId=donateId;
+									lasttime=lasttimeStr;
+									loading_style.refresh_end();                    
+									var t1 =  setTimeout(function(){                        
+										clearTimeout(t1);                        
+										myScroll.refresh();                        
+										option.is_refresh = false;                   
+									},500);
+								});       
+							}           
+							if(this.moved_distance < -option.pull_distance)
+							{              
+								loading_style.load_start();
+								option.is_loading = true;  
+								donationHistory(pageDonateId,lasttime,fromtimeval,totimeval,function(donateId,lasttimeStr){
+								 pageDonateId=donateId;
+								 lasttime=lasttimeStr;
+									loading_style.load_end();                    
+									var t2 = setTimeout(function(){                        
+										clearTimeout(t2);                       
+										option.is_loading = false; 
+										myScroll.refresh();                   
+									},500);
+								});            
+							}       
+						}    
+					});
+	});
+	document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+	function frometimevalue(){
+		var date = new Date(this.value);
+		fromtimeval=moment(date).format('YYYY-MM-DD');
+		lasttime=totimeval;
+		donateId=0;
+		donationHistory(pageDonateId,lasttime,fromtimeval,totimeval,function(donateId,lasttimeStr){
+									pageDonateId=donateId;
+									lasttime=lasttimeStr;
+		});
+	}
+	function totimevalue(){
+		var date = new Date(this.value);
+		totimeval =moment(date).add(1,'day').format('YYYY-MM-DD');
+		lasttime=totimeval;
+		donateId=0;
+		donationHistory(pageDonateId,lasttime,fromtimeval,totimeval,function(donateId,lasttimeStr){
+									pageDonateId=donateId;
+									lasttime=lasttimeStr;
+		});
+	}
+	$('#fromtime').change(frometimevalue);
+	$('#totime').change(totimevalue);
+	</script>
 </html>
